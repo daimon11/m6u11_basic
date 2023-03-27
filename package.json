@@ -1,0 +1,16 @@
+{
+  "name": "credit_card-1lvl",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "cleave.js": "^1.6.0",
+    "redom": "^3.29.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "npx parcel index.html",
+    "build": "npx parcel build script/index.html"
+  },
+  "author": "Dmitriy",
+  "license": "ISC"
+}
