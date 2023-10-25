@@ -1,9 +1,12 @@
 console.log('работаем пацаны!');
+import { validCardHolder, validCardNumber, validCardCVC } from './validation';
 import { el, setChildren } from 'redom';
 
 import Cleave from 'cleave.js';
 
-createSpan = (data) => {
+console.log(String(454345434543454).length);
+
+const createSpan = (data) => {
   const span = el('span', { className: `${data.class}` }, `${data.value}`);
   return span;
 }
@@ -24,11 +27,12 @@ const createInputWrapper = ({
   typeInput = null,
   classNameInput,
   idInput = null,
+  nameAtr = null,
 }) => {
   const inputWrapper = el('div', { className: `form__input-wrap ${classNameDiv}` });
   setChildren(inputWrapper, [
     el('label', `${valueLabel}`, { className: `form__label ${classNameLabel}` }),
-    el('input', { className: `input ${classNameInput}`, type: `${typeInput}`, id: `${idInput}` })
+    el('input', { className: `input ${classNameInput}`, type: `${typeInput}`, id: `${idInput}`, name: `${nameAtr}` })
   ]);
   if (inputWrapper.querySelector('.input').getAttribute('id') === 'null') {
     inputWrapper.querySelector('.input').removeAttribute('id');
@@ -38,6 +42,19 @@ const createInputWrapper = ({
   };
 
   return inputWrapper;
+};
+
+const showMessage = (message) => {
+  const wrapperTest = el('div', { className: 'unit' });
+  const unitText = el('h2');
+  unitText.textContent = message;
+  setChildren(wrapperTest, [unitText]);
+
+  document.querySelector('.card').append(wrapperTest);
+
+  setTimeout(function () {
+    document.querySelector('.card').removeChild(wrapperTest);
+  }, 2000);
 };
 
 const formShow = (name, number, date, cvv, form) => {
@@ -65,14 +82,26 @@ const formShow = (name, number, date, cvv, form) => {
       var cleave = new Cleave(cvv, {
         delimiter: '',
         blocks: [1, 1, 1],
-    });
+      });
       cvv.value = cvv.value.replace(/[\D]/g, '');
     };
   })
 
   form.addEventListener('submit', e => {
+
+    const formData = new FormData(e.target);
+    const creditCardValue = Object.fromEntries(formData);
+
+    console.log(creditCardValue);
+
     e.preventDefault();
     form.reset();
+
+    if (validCardHolder(creditCardValue.holder) && validCardNumber(creditCardValue.number) && validCardCVC(creditCardValue.cvv)) {
+      showMessage('Данные валидны');
+    } else {
+      showMessage('Данные не валидны!!!');
+    }
   })
 }
 
@@ -90,6 +119,7 @@ const createForm = () => {
       valueLabel: 'Card Holder',
       typeInput: 'text',
       classNameInput: 'input__holder',
+      nameAtr: 'holder',
     }),
     createInputWrapper({
       classNameDiv: 'form__input-wrap_number',
@@ -98,6 +128,7 @@ const createForm = () => {
       typeInput: '',
       classNameInput: 'input__number',
       idInput: 'cardNumber',
+      nameAtr: 'number',
     }),
     createInputWrapper({
       classNameDiv: 'form__input-wrap_date',
@@ -105,6 +136,7 @@ const createForm = () => {
       valueLabel: 'Card Expiry',
       typeInput: 'text',
       classNameInput: 'input__date',
+      nameAtr: 'date',
     }),
     createInputWrapper({
       classNameDiv: 'form__input-wrap_cvv',
@@ -112,6 +144,7 @@ const createForm = () => {
       valueLabel: 'CVV',
       typeInput: 'text',
       classNameInput: 'input__cvv',
+      nameAtr: 'cvv',
     }),
     el('button', { className: 'form__button' }, 'CHECK OUT')
   ]);
